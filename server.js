@@ -21,51 +21,92 @@ app.post("/api/plan", async (req, res) => {
     .map(([k, v]) => `${k}: ${parseInt(v).toLocaleString()}`)
     .join("\n");
 
-  const prompt = `You are Waypoint, an expert AI travel planner specializing in points and miles optimization. You have a warm, knowledgeable tone — like a well-traveled friend who knows exactly how to use points.
+  const prompt = `You are Waypoint, an expert in loyalty points and travel optimization.
 
-The user has the following points balances:
-${pointsSummary || "No points entered — focus on cash-efficient options"}
+The user's points balances:
+${pointsSummary || "No points entered"}
 
-The user's trip request:
+Their trip request:
 "${tripDescription}"
 
-Search the web for current flight options, award availability, hotel options, and weather for the dates mentioned. Then provide exactly 3 destination recommendations.
+Search the web for nonstop flights, award availability, hotel options, and weather for the dates and airports mentioned.
 
-For each destination:
-1. A conversational opening line explaining why it fits perfectly
-2. FLIGHT: Which points to use, which airline, approximate points cost, and departure info from their nearest airport
-3. HOTEL: Which points program, specific property name, approximate points per night
-4. TRANSFER BONUS: Any active transfer bonuses that apply right now
-5. VIBE: 2-3 sentences on what it's actually like — beaches, bars, food, crowds
-6. CASH ESTIMATE: Estimated total cash spend on top of points
+Return ONLY a valid JSON object with NO markdown, no backticks, no explanation. Just raw JSON in exactly this structure:
 
-Keep it conversational and specific. You're texting a friend, not writing a report. Use their actual points balances to give real redemption strategies. Be honest if a destination requires more points than they have.
+{
+  "destinations": [
+    {
+      "city": "Lisbon",
+      "country": "Portugal",
+      "emoji": "🇵🇹",
+      "why": "One sentence why this fits their exact constraints",
+      "flightTime": "7h",
+      "tempF": "75°F",
+      "pointsNeeded": "60k miles",
+      "coordinates": { "lat": 38.7223, "lng": -9.1393 },
+      "outboundFlights": [
+        {
+          "airline": "United Airlines",
+          "route": "EWR → LIS",
+          "departure": "9:55 PM",
+          "arrival": "9:30 AM+1",
+          "points": "30,000 United miles",
+          "cash": "$5.60",
+          "bookUrl": "https://www.united.com/en/us/flights/deals/awards"
+        }
+      ],
+      "returnFlights": [
+        {
+          "airline": "TAP Air Portugal",
+          "route": "LIS → EWR",
+          "departure": "1:15 PM",
+          "arrival": "4:20 PM",
+          "points": "30,000 United miles",
+          "cash": "$5.60",
+          "bookUrl": "https://www.united.com/en/us/flights/deals/awards"
+        }
+      ],
+      "hotels": [
+        {
+          "name": "Andaz Lisbon",
+          "program": "World of Hyatt",
+          "pointsPerNight": "21,000–25,000 pts/night",
+          "cashRate": "~$280/night",
+          "bookUrl": "https://www.hyatt.com/andaz/lishr-andaz-lisbon"
+        }
+      ],
+      "actionSteps": [
+        "Transfer 60,000 Chase UR → United MileagePlus at chase.com/transfer",
+        "Book EWR→LIS nonstop on united.com using your United miles",
+        "Transfer 100,000 Chase UR → World of Hyatt for 4 free nights",
+        "Book Andaz Lisbon at hyatt.com using your Hyatt points"
+      ],
+      "cashEstimate": "$400–600",
+      "unsplashQuery": "Lisbon Portugal"
+    }
+  ]
+}
 
-End with: "Want me to dig deeper into any of these, or should I try different destinations?"`;
+Return exactly 3 destinations. Be specific with real flight times, real hotel names, and real booking URLs. Use the user's actual points balances to calculate what they can afford. Keep actionSteps to 4 steps max.`;
 
   try {
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    const stream = await client.messages.stream({
+    const response = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2000,
+      max_tokens: 4000,
       tools: [{ type: "web_search_20250305", name: "web_search" }],
       messages: [{ role: "user", content: prompt }],
     });
 
-    for await (const chunk of stream) {
-      if (
-        chunk.type === "content_block_delta" &&
-        chunk.delta?.type === "text_delta"
-      ) {
-        res.write(`data: ${JSON.stringify({ text: chunk.delta.text })}\n\n`);
-      }
+    const textBlock = response.content.find(b => b.type === "text");
+    if (!textBlock) {
+      return res.status(500).json({ error: "No response from AI" });
     }
 
-    res.write("data: [DONE]\n\n");
-    res.end();
+    let jsonText = textBlock.text.trim();
+    jsonText = jsonText.replace(/^```json\n?/, "").replace(/^```\n?/, "").replace(/```$/, "").trim();
+
+    const data = JSON.parse(jsonText);
+    res.json(data);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Something went wrong" });
