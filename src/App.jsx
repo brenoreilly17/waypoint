@@ -147,9 +147,8 @@ function Nav({ onHome, onBack, backLabel, onAbout, onMission }) {
       {!isMobile && onMission && <span onClick={onMission} style={{ fontSize: "13px", color: C.muted, cursor: "pointer" }} onMouseEnter={e => e.target.style.color = C.text} onMouseLeave={e => e.target.style.color = C.muted}>Our Mission</span>}
       <div style={{ flex: 1 }} />
       {onBack && (
-        <span onClick={onBack} style={{ fontSize: "12px", color: C.muted, cursor: "pointer", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: "4px" }}
-          onMouseEnter={e => e.currentTarget.style.color = C.text}
-          onMouseLeave={e => e.currentTarget.style.color = C.muted}>
+        <span onClick={onBack} style={{ fontSize: "12px", color: C.muted, cursor: "pointer", whiteSpace: "nowrap" }}
+          onMouseEnter={e => e.target.style.color = C.text} onMouseLeave={e => e.target.style.color = C.muted}>
           {backLabel || "← Back"}
         </span>
       )}
@@ -215,21 +214,23 @@ function Landing({ onStart, onAbout, onMission }) {
         </div>
       </div>
       <Marquee />
-      {isMobile ? (
-        <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", gap: "8px" }}>
-          <span onClick={onAbout} style={{ fontSize: "11px", color: C.muted, cursor: "pointer" }}>About</span>
-          <span style={{ fontSize: "11px", color: C.muted2 }}>·</span>
-          <span onClick={onMission} style={{ fontSize: "11px", color: C.muted, cursor: "pointer" }}>Our Mission</span>
-        </div>
-      ) : (
-        <div style={{ padding: "16px 24px", display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#2d9e5f" }} />
-          <span style={{ fontSize: "12px", color: C.muted2 }}>
-            Already have an account?{" "}
-            <span style={{ color: C.muted, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "3px" }}>Sign in</span>
-          </span>
-        </div>
-      )}
+      <div style={{ padding: isMobile ? "14px 20px" : "16px 24px", display: "flex", alignItems: "center", gap: "8px" }}>
+        {isMobile ? (
+          <>
+            <span onClick={onAbout} style={{ fontSize: "11px", color: C.muted, cursor: "pointer" }}>About</span>
+            <span style={{ fontSize: "11px", color: C.muted2 }}>·</span>
+            <span onClick={onMission} style={{ fontSize: "11px", color: C.muted, cursor: "pointer" }}>Our Mission</span>
+          </>
+        ) : (
+          <>
+            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#2d9e5f" }} />
+            <span style={{ fontSize: "12px", color: C.muted2 }}>
+              Already have an account?{" "}
+              <span style={{ color: C.muted, cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "3px" }}>Sign in</span>
+            </span>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -241,9 +242,7 @@ function About({ onHome, onBack, onAbout, onMission }) {
       <Nav onHome={onHome} onBack={onBack} backLabel="← Back" onAbout={onAbout} onMission={onMission} />
       <div style={{ maxWidth: "580px", margin: "0 auto", padding: isMobile ? "40px 20px" : "64px 24px" }}>
         <div className="animate-1" style={{ fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase", color: C.gold, marginBottom: "14px" }}>About</div>
-        <h1 className="animate-2" style={{ fontSize: isMobile ? "28px" : "34px", fontWeight: "700", letterSpacing: "-0.04em", color: C.text, marginBottom: "20px", lineHeight: "1.15" }}>
-          Built out of frustration.
-        </h1>
+        <h1 className="animate-2" style={{ fontSize: isMobile ? "28px" : "34px", fontWeight: "700", letterSpacing: "-0.04em", color: C.text, marginBottom: "20px", lineHeight: "1.15" }}>Built out of frustration.</h1>
         <p className="animate-3" style={{ fontSize: "15px", color: C.muted, lineHeight: "1.85", marginBottom: "16px" }}>
           I'm 24, living in New Jersey, working in fintech in New York City. I have hundreds of thousands of points across Chase, Marriott, and United — and every time I wanted to plan a trip, I spent hours bouncing between Seats.aero, Rooms.aero, Reddit threads, and transfer partner charts just to figure out where I could even afford to go.
         </p>
@@ -388,7 +387,10 @@ function TripForm({ points, onResults, onBack, onHome, onAbout, onMission }) {
     setLoading(true);
     const tripDescription = `Origin airports: ${form.origin}\nDates: ${form.dates}\nConnections: ${form.connections}\nEarliest departure: ${form.earliestDep}\nReturn earliest departure: ${form.returnDep}\nTravelers: ${form.travelers}\nCash budget on top of points: ${form.budget || "flexible"}\nTrip vibe: ${form.vibe}`.trim();
     try {
-      const response = await fetch("http://localhost:3001/api/plan", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ points, tripDescription }) });
+      const response = await fetch("/api/plan", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ points, tripDescription }),
+      });
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       onResults(data.destinations, form);
@@ -569,7 +571,10 @@ function DetailView({ dest, form, onBack, onHome, onAbout, onMission }) {
   const loadItinerary = async () => {
     setLoadingItinerary(true);
     try {
-      const response = await fetch("http://localhost:3001/api/itinerary", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ city: dest.city, country: dest.country, dates: form?.dates, vibe: form?.vibe, travelers: form?.travelers }) });
+      const response = await fetch("/api/itinerary", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ city: dest.city, country: dest.country, dates: form?.dates, vibe: form?.vibe, travelers: form?.travelers }),
+      });
       const data = await response.json();
       if (data.days) setItinerary(data.days);
     } catch { setItinerary(null); }
