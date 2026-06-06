@@ -1,13 +1,16 @@
-import Anthropic from "@anthropic-ai/sdk";
+const Anthropic = require("@anthropic-ai/sdk");
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+module.exports = async function handler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const { city, country, dates, vibe, travelers } = req.body;
 
@@ -20,9 +23,9 @@ Generate a day-by-day itinerary for:
 - Vibe: ${vibe || "general sightseeing"}
 
 Return this exact JSON structure:
-{"days":[{"day":1,"date":"Jun 6","title":"Arrival & First Impressions","description":"2-3 sentences describing the day activities, neighborhood, where to eat dinner."},{"day":2,"date":"Jun 7","title":"Day title","description":"Activities for the day."}]}
+{"days":[{"day":1,"date":"Jun 6","title":"Arrival & First Impressions","description":"2-3 sentences describing the day."},{"day":2,"date":"Jun 7","title":"Day title","description":"Activities for the day."}]}
 
-Generate the right number of days based on the dates. If beach/resort keep days relaxed. If city trip make each day purposeful. Max 14 days. Return ONLY the JSON.`;
+Generate the right number of days based on the dates. Max 14 days. Return ONLY the JSON.`;
 
   try {
     const response = await client.messages.create({
@@ -40,6 +43,6 @@ Generate the right number of days based on the dates. If beach/resort keep days 
     res.json(JSON.parse(jsonText));
   } catch (err) {
     console.error("Itinerary error:", err.message);
-    res.status(500).json({ error: "Could not generate itinerary" });
+    res.status(500).json({ error: err.message });
   }
-}
+};
