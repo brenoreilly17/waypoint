@@ -1,5 +1,13 @@
 {
   "version": 2,
+  "functions": {
+    "api/plan.cjs": {
+      "runtime": "nodejs20.x"
+    },
+    "api/itinerary.cjs": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
     { "source": "/api/plan", "destination": "/api/plan.cjs" },
     { "source": "/api/itinerary", "destination": "/api/itinerary.cjs" },
