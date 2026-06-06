@@ -1,8 +1,8 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/api/plan", "destination": "/api/plan.js" },
-    { "source": "/api/itinerary", "destination": "/api/itinerary.js" },
+    { "source": "/api/plan", "destination": "/api/plan.cjs" },
+    { "source": "/api/itinerary", "destination": "/api/itinerary.cjs" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
