@@ -363,6 +363,7 @@ function TripForm({ points, onResults, onBack, onHome, onAbout, onMission }) {
     const code = airportInput.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 3);
     if (code.length === 3 && !airports.includes(code)) setAirports(prev => [...prev, code]);
     setAirportInput("");
+    inputRef.current?.blur();
   };
 
   const removeAirport = (code) => setAirports(prev => prev.filter(a => a !== code));
@@ -459,8 +460,8 @@ function TripForm({ points, onResults, onBack, onHome, onAbout, onMission }) {
               className="dim-placeholder"
               onChange={e => setAirportInput(e.target.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 3))}
               onKeyDown={e => { if ((e.key === "Enter" || e.key === " ") && airportInput.length === 3) { e.preventDefault(); addAirport(); } }}
-              onBlur={() => { if (airportInput.length === 3) addAirport(); }}
-              placeholder="EWR" style={bigInputStyle} />
+              onBlur={() => {}}
+              placeholder={airports.length === 0 ? "EWR" : ""} style={bigInputStyle} />
             {airports.length > 0 && (
               <div style={{ display: "flex", gap: "8px", marginTop: "16px", flexWrap: "wrap", justifyContent: "center" }}>
                 {airports.map(a => (
@@ -554,10 +555,11 @@ function TripForm({ points, onResults, onBack, onHome, onAbout, onMission }) {
           <div style={stepStyle} key="s7">
             <div style={questionStyle}>Describe your ideal trip.</div>
             <div style={hintStyle}>Weather, vibe, activities — anything that matters to you.</div>
-            <textarea ref={inputRef} value={vibe} onChange={e => setVibe(e.target.value)}
-              className="dim-placeholder"
-              placeholder="Mild weather, beach access, good food scene, not too touristy..."
-              style={{ background: "transparent", border: "none", borderBottom: `2px solid ${C.gold}`, color: C.text, fontSize: isMobile ? "16px" : "18px", textAlign: "center", outline: "none", width: "100%", maxWidth: "480px", padding: "8px 0", fontFamily: "inherit", resize: "none", height: "90px", lineHeight: "1.6" }} />
+            <textarea ref={inputRef} value={vibe}
+  onChange={e => { setVibe(e.target.value); e.target.style.height = "auto"; e.target.style.height = e.target.scrollHeight + "px"; }}
+  className="dim-placeholder"
+  placeholder="Mild weather, beach access, good food scene, not too touristy..."
+  style={{ background: "transparent", border: "none", borderBottom: `2px solid ${C.gold}`, color: C.text, fontSize: isMobile ? "16px" : "18px", textAlign: "center", outline: "none", width: "100%", maxWidth: "480px", padding: "8px 0", fontFamily: "inherit", resize: "none", height: "60px", lineHeight: "1.6", overflow: "hidden" }} />
             {error && <div style={{ fontSize: "13px", color: "#e05555", marginTop: "16px" }}>{error}</div>}
             <button onClick={handleSubmit} disabled={vibe.length < 10} style={{ marginTop: "32px", padding: "14px 40px", background: vibe.length < 10 ? C.surface2 : C.gold, color: vibe.length < 10 ? C.muted2 : "#0d0d0d", border: "none", borderRadius: "8px", fontSize: "15px", fontWeight: "600", cursor: vibe.length < 10 ? "default" : "pointer", fontFamily: "inherit", transition: "all 0.15s" }}>
               Find my destinations →
