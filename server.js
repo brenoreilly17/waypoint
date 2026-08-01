@@ -5,6 +5,210 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const MOCK_MODE = true;
+
+const MOCK_RESPONSE = {
+  destinations: [
+    {
+      city: "Lisbon",
+      country: "Portugal",
+      emoji: "🇵🇹",
+      why: "Aer Lingus flies nonstop BOS→LIS in August, bookable with Avios transferred from Amex MR — mild temps, world-class food scene, not overrun with tourists.",
+      flightTime: "6h 45m",
+      tempF: "82°F high / 65°F low",
+      pointsNeeded: "26k Avios via Amex MR",
+      coordinates: { lat: 38.7223, lng: -9.1393 },
+      outboundFlights: [
+        {
+          airline: "Aer Lingus",
+          route: "BOS → LIS",
+          departure: "9:55 PM",
+          arrival: "9:40 AM+1",
+          points: "26,000 Aer Lingus Avios (transfer from Amex MR)",
+          cash: "$5.60",
+          bookingSteps: [
+            "Transfer 26,000 Amex MR to Aer Lingus AerClub at americanexpress.com/rewards — transfers instantly",
+            "Go to aerlingus.com, click Book with Avios, search BOS → LIS for Aug 8",
+            "Select the nonstop flight and complete booking — pay ~$5.60 in taxes with any card"
+          ]
+        }
+      ],
+      returnFlights: [
+        {
+          airline: "Aer Lingus",
+          route: "LIS → BOS",
+          departure: "11:15 AM",
+          arrival: "1:45 PM",
+          points: "26,000 Aer Lingus Avios (transfer from Amex MR)",
+          cash: "$5.60",
+          bookingSteps: [
+            "Use remaining Aer Lingus Avios balance from same transfer",
+            "Go to aerlingus.com, search LIS → BOS for Aug 18, select nonstop and book with Avios"
+          ]
+        }
+      ],
+      hotels: [
+        {
+          name: "Hilton Lisbon",
+          program: "Hilton Honors",
+          pointsPerNight: "40,000 pts/night",
+          cashRate: "~$180/night",
+          bookUrl: "https://www.hilton.com/en/search/find-hotels/destination/lisbon-portugal/",
+          bookingSteps: [
+            "Go to hilton.com and search Lisbon for Aug 8–18",
+            "Filter by Use Points, select Hilton Lisbon at 40,000 pts/night",
+            "Your 120,000 Hilton points covers 3 free nights — pay cash for remaining nights at ~$180/night"
+          ]
+        },
+        {
+          name: "DoubleTree by Hilton Lisbon",
+          program: "Hilton Honors",
+          pointsPerNight: "30,000 pts/night",
+          cashRate: "~$140/night",
+          bookUrl: "https://www.hilton.com/en/search/find-hotels/destination/lisbon-portugal/",
+          bookingSteps: [
+            "Go to hilton.com, search Lisbon for Aug 8–18, filter by Use Points",
+            "Select DoubleTree Lisbon at 30,000 pts/night — your 120,000 points covers 4 free nights here"
+          ]
+        }
+      ],
+      cashEstimate: "$1,200–1,600",
+      localCosts: { uber: "~$8", beer: "~$2", dinner: "~$20" }
+    },
+    {
+      city: "Edinburgh",
+      country: "Scotland",
+      emoji: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+      why: "Delta flies nonstop BOS→EDI in summer — redeem your Delta SkyMiles directly, cool August weather, incredible hiking and whisky scene.",
+      flightTime: "6h 30m",
+      tempF: "67°F high / 52°F low",
+      pointsNeeded: "30k Delta SkyMiles",
+      coordinates: { lat: 55.9533, lng: -3.1883 },
+      outboundFlights: [
+        {
+          airline: "Delta Air Lines",
+          route: "BOS → EDI",
+          departure: "8:10 PM",
+          arrival: "7:45 AM+1",
+          points: "30,000 Delta SkyMiles",
+          cash: "$5.60",
+          bookingSteps: [
+            "Go to delta.com, click Shop with Miles, search BOS → EDI for Aug 8",
+            "Select the nonstop flight at 30,000 SkyMiles economy",
+            "Pay ~$5.60 in taxes at checkout with any card"
+          ]
+        }
+      ],
+      returnFlights: [
+        {
+          airline: "Delta Air Lines",
+          route: "EDI → BOS",
+          departure: "10:30 AM",
+          arrival: "1:15 PM",
+          points: "30,000 Delta SkyMiles",
+          cash: "$5.60",
+          bookingSteps: [
+            "Go to delta.com, search EDI → BOS for Aug 18",
+            "Select nonstop and book with your remaining SkyMiles"
+          ]
+        }
+      ],
+      hotels: [
+        {
+          name: "Hilton Edinburgh Carlton",
+          program: "Hilton Honors",
+          pointsPerNight: "35,000 pts/night",
+          cashRate: "~$160/night",
+          bookUrl: "https://www.hilton.com/en/search/find-hotels/destination/edinburgh-scotland/",
+          bookingSteps: [
+            "Go to hilton.com, search Edinburgh for Aug 8–18, filter by Use Points",
+            "Select Hilton Edinburgh Carlton at 35,000 pts/night",
+            "Your 120,000 points covers 3 free nights — pay cash for remaining nights"
+          ]
+        },
+        {
+          name: "DoubleTree by Hilton Edinburgh",
+          program: "Hilton Honors",
+          pointsPerNight: "25,000 pts/night",
+          cashRate: "~$120/night",
+          bookUrl: "https://www.hilton.com/en/search/find-hotels/destination/edinburgh-scotland/",
+          bookingSteps: [
+            "Go to hilton.com, search Edinburgh for Aug 8–18, filter by Use Points",
+            "Select DoubleTree Edinburgh at 25,000 pts/night — best value, covers nearly 5 nights"
+          ]
+        }
+      ],
+      cashEstimate: "$800–1,100",
+      localCosts: { uber: "~$12", beer: "~$6", dinner: "~$30" }
+    },
+    {
+      city: "Reykjavik",
+      country: "Iceland",
+      emoji: "🇮🇸",
+      why: "Alaska Airlines flies BOS→KEF nonstop — redeem your Alaska miles for outstanding value, midnight sun in August, dramatic landscapes just outside the city.",
+      flightTime: "5h 45m",
+      tempF: "58°F high / 46°F low",
+      pointsNeeded: "20k Alaska miles",
+      coordinates: { lat: 64.1355, lng: -21.8954 },
+      outboundFlights: [
+        {
+          airline: "Alaska Airlines",
+          route: "BOS → KEF",
+          departure: "6:30 PM",
+          arrival: "5:50 AM+1",
+          points: "20,000 Alaska Mileage Plan miles",
+          cash: "$5.60",
+          bookingSteps: [
+            "Go to alaskaair.com, search BOS → KEF for Aug 8 using miles",
+            "Select the nonstop Icelandair flight bookable with Alaska miles",
+            "Pay ~$5.60 in taxes at checkout"
+          ]
+        }
+      ],
+      returnFlights: [
+        {
+          airline: "Alaska Airlines",
+          route: "KEF → BOS",
+          departure: "12:00 PM",
+          arrival: "2:15 PM",
+          points: "20,000 Alaska Mileage Plan miles",
+          cash: "$5.60",
+          bookingSteps: [
+            "Go to alaskaair.com, search KEF → BOS for Aug 18",
+            "Book return with remaining Alaska miles"
+          ]
+        }
+      ],
+      hotels: [
+        {
+          name: "Hilton Reykjavik Nordica",
+          program: "Hilton Honors",
+          pointsPerNight: "50,000 pts/night",
+          cashRate: "~$220/night",
+          bookUrl: "https://www.hilton.com/en/search/find-hotels/destination/reykjavik-iceland/",
+          bookingSteps: [
+            "Go to hilton.com, search Reykjavik for Aug 8–18, filter by Use Points",
+            "Select Hilton Nordica at 50,000 pts/night — your 120,000 points covers 2 free nights"
+          ]
+        },
+        {
+          name: "Canopy by Hilton Reykjavik City Centre",
+          program: "Hilton Honors",
+          pointsPerNight: "40,000 pts/night",
+          cashRate: "~$180/night",
+          bookUrl: "https://www.hilton.com/en/search/find-hotels/destination/reykjavik-iceland/",
+          bookingSteps: [
+            "Go to hilton.com, search Reykjavik Aug 8–18, filter by Use Points",
+            "Select Canopy Hilton at 40,000 pts/night — 3 free nights with your balance"
+          ]
+        }
+      ],
+      cashEstimate: "$1,400–1,800",
+      localCosts: { uber: "~$18", beer: "~$12", dinner: "~$45" }
+    }
+  ]
+};
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -14,28 +218,34 @@ const client = new Anthropic({
 });
 
 app.post("/api/plan", async (req, res) => {
+  if (MOCK_MODE) {
+    await new Promise(r => setTimeout(r, 2000));
+    return res.json(MOCK_RESPONSE);
+  }
+
   const { points, tripDescription } = req.body;
 
-  const pointsSummary = Object.entries(points)
+  const pointsSummary = Object.entries(points || {})
     .filter(([_, v]) => parseInt(v) > 0)
     .map(([k, v]) => `${k}: ${parseInt(v).toLocaleString()}`)
     .join("\n");
 
-  const prompt = `You are Waypoint, a travel planning API. You MUST respond with ONLY a valid JSON object — no text before it, no text after it, no markdown, no backticks, no explanation whatsoever. If you add anything other than raw JSON, the application will break.
+  const prompt = `You are Waypoint, a travel planning API. Respond with ONLY a valid JSON object — no text, no markdown, no backticks.
 
-The user's points balances:
-${pointsSummary || "No points entered"}
+THE USER HAS ONLY THESE LOYALTY POINTS. DO NOT REFERENCE ANY OTHER PROGRAM:
+${pointsSummary || "No points — recommend cash only"}
 
-Their trip request:
-"${tripDescription}"
+STRICT RULES:
+- ONLY recommend flights bookable with the programs listed above or their transfer partners
+- ONLY recommend hotels bookable with the hotel programs listed above
+- cashEstimate must be a SHORT NUMBER ONLY like "$800-1,200" — never a sentence or explanation
+- tempF must include both high AND low
+- Always return exactly 2 hotels per destination
+- Never return N/A for points — if you can't find a points redemption pick a different destination
 
-Search the web for nonstop flights, award availability, hotel options, and weather for the dates and airports mentioned.
+Trip request: "${tripDescription}"
 
-Return ONLY this exact JSON structure with exactly 3 destinations:
-
-{"destinations":[{"city":"Lisbon","country":"Portugal","emoji":"🇵🇹","why":"One sentence why it fits their exact constraints.","flightTime":"7h","tempF":"77°F","pointsNeeded":"60k miles","coordinates":{"lat":38.7223,"lng":-9.1393},"outboundFlights":[{"airline":"United Airlines","route":"EWR → LIS","departure":"9:55 PM","arrival":"9:30 AM+1","points":"30,000 United miles","cash":"$5.60","bookUrl":"https://www.united.com/en/us/flights/deals/awards"}],"returnFlights":[{"airline":"TAP Air Portugal","route":"LIS → EWR","departure":"1:15 PM","arrival":"4:20 PM","points":"30,000 United miles","cash":"$5.60","bookUrl":"https://www.united.com/en/us/flights/deals/awards"}],"hotels":[{"name":"Andaz Lisbon","program":"World of Hyatt","pointsPerNight":"21,000 pts/night","cashRate":"~$280/night","bookUrl":"https://www.hyatt.com/andaz/lishr-andaz-lisbon"},{"name":"Sheraton Lisboa","program":"Marriott Bonvoy","pointsPerNight":"40,000 pts/night","cashRate":"~$200/night","bookUrl":"https://www.marriott.com"}],"actionSteps":["Transfer 60,000 Chase UR to United MileagePlus at chase.com/transfer","Book EWR to LIS nonstop on united.com using your United miles","Transfer 50,000 Chase UR to World of Hyatt for 2 free nights","Book Andaz Lisbon at hyatt.com using your Hyatt points"],"cashEstimate":"$400-600","unsplashQuery":"Lisbon Portugal city travel","localCosts":{"uber":"~$8","beer":"~$3","dinner":"~$20"}},{"city":"Split","country":"Croatia","emoji":"🇭🇷","why":"One sentence why it fits.","flightTime":"8h 45m","tempF":"79°F","pointsNeeded":"60k miles","coordinates":{"lat":43.5081,"lng":16.4402},"outboundFlights":[{"airline":"United Airlines","route":"EWR → SPU","departure":"6:00 PM","arrival":"10:30 AM+1","points":"30,000 United miles","cash":"$5.60","bookUrl":"https://www.united.com/en/us/flights/deals/awards"}],"returnFlights":[{"airline":"United Airlines","route":"SPU → EWR","departure":"1:00 PM","arrival":"5:30 PM","points":"30,000 United miles","cash":"$5.60","bookUrl":"https://www.united.com/en/us/flights/deals/awards"}],"hotels"[{"name":"Radisson Blu Split","program":"Radisson Rewards","pointsPerNight":"50,000 pts/night","cashRate":"~$180/night","bookUrl":"https://www.radissonhotels.com"}],"actionSteps":["Transfer 60,000 Chase UR to United MileagePlus","Book EWR to SPU nonstop on united.com","Pay cash for hotel — Split has limited points hotels","Budget ~$180/night for 4-star options"],"cashEstimate":"$500-700","unsplashQuery":"Split Croatia Adriatic coast","localCosts":{"uber":"~$6","beer":"~$3","dinner":"~$18"}},{"city":"Azores","country":"Portugal","emoji":"🇵🇹","why":"One sentence why it fits.","flightTime":"4h 30m","tempF":"68°F","pointsNeeded":"30k UR","coordinates":{"lat":37.7412,"lng":-25.6756},"outboundFlights":[{"airline":"United Airlines","route":"EWR → PDL","departure":"9:00 PM","arrival":"7:30 AM+1","points":"30,000 Chase UR via Aeroplan","cash":"$5.60","bookUrl":"https://www.united.com/en/us/flights/deals/awards"}],"returnFlights":[{"airline":"United Airlines","route":"PDL → EWR","departure":"1:00 PM","arrival":"3:30 PM","points":"30,000 Chase UR via Aeroplan","cash":"$5.60","bookUrl":"https://www.united.com/en/us/flights/deals/awards"}],"hotels":[{"name":"Terra Nostra Garden Hotel","program":"Cash only","pointsPerNight":"N/A","cashRate":"~$150/night","bookUrl":"https://www.terranostragardenhotel.com"}],"actionSteps":["Transfer 30,000 Chase UR to Aeroplan at chase.com/transfer","Book EWR to PDL nonstop on united.com","Pay cash for boutique hotels — Azores has limited chain options","Budget $150/night for excellent local properties"],"cashEstimate":"$300-450","unsplashQuery":"Azores Portugal volcanic island","localCosts":{"uber":"~$5","beer":"~$2","dinner":"~$15"}}]}
-
-Use real data from your web search. Replace ALL example values with actual current information based on the user's specific request. The example JSON above is just the structure — fill it with real searched data. Return ONLY the JSON object, absolutely nothing else.`;
+Return ONLY valid JSON with 3 destinations.`;
 
   try {
     const response = await client.messages.create({
@@ -46,45 +256,24 @@ Use real data from your web search. Replace ALL example values with actual curre
     });
 
     const textBlock = response.content.find(b => b.type === "text");
-    if (!textBlock) {
-      return res.status(500).json({ error: "No response from AI" });
-    }
+    if (!textBlock) return res.status(500).json({ error: "No response from AI" });
 
-    let jsonText = textBlock.text.trim();
-    jsonText = jsonText.replace(/^```json\n?/, "").replace(/^```\n?/, "").replace(/```$/, "").trim();
-
+    let jsonText = textBlock.text.trim()
+      .replace(/^```json\n?/, "").replace(/^```\n?/, "").replace(/```$/, "").trim();
     const firstBrace = jsonText.indexOf("{");
     const lastBrace = jsonText.lastIndexOf("}");
-    if (firstBrace !== -1 && lastBrace !== -1) {
-      jsonText = jsonText.slice(firstBrace, lastBrace + 1);
-    }
+    if (firstBrace !== -1 && lastBrace !== -1) jsonText = jsonText.slice(firstBrace, lastBrace + 1);
 
-    const data = JSON.parse(jsonText);
-    res.json(data);
+    res.json(JSON.parse(jsonText));
   } catch (err) {
     console.error("Error:", err.message);
-    res.status(500).json({ error: "Something went wrong: " + err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
-const PORT = 3001;
-
 app.post("/api/itinerary", async (req, res) => {
   const { city, country, dates, vibe, travelers } = req.body;
-
-  const prompt = `You are a travel planning API. Return ONLY valid JSON, no other text.
-
-Generate a day-by-day itinerary for:
-- Destination: ${city}, ${country}
-- Dates: ${dates || "not specified"}
-- Travelers: ${travelers || "Solo"}
-- Vibe: ${vibe || "general sightseeing"}
-
-Return this exact JSON structure:
-{"days":[{"day":1,"date":"Jun 6","title":"Arrival & First Impressions","description":"2-3 sentences describing the day's activities, neighborhood to stay in, where to eat dinner."},{"day":2,"date":"Jun 7","title":"Day title","description":"Activities for the day."}]}
-
-Generate the right number of days based on the dates. If it's a beach/resort trip keep days relaxed. If city trip make each day purposeful. Max 14 days. Return ONLY the JSON.`;
-
+  const prompt = `Generate a day-by-day itinerary for ${city}, ${country}. Dates: ${dates}. Travelers: ${travelers}. Vibe: ${vibe}. Return ONLY JSON: {"days":[{"day":1,"date":"Aug 8","title":"Arrival & First Impressions","description":"2-3 sentences about the day."}]}`;
   try {
     const response = await client.messages.create({
       model: "claude-sonnet-4-6",
@@ -98,11 +287,9 @@ Generate the right number of days based on the dates. If it's a beach/resort tri
     if (first !== -1 && last !== -1) jsonText = jsonText.slice(first, last + 1);
     res.json(JSON.parse(jsonText));
   } catch (err) {
-    console.error("Itinerary error:", err.message);
-    res.status(500).json({ error: "Could not generate itinerary" });
+    res.status(500).json({ error: err.message });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Waypoint server running on port ${PORT}`);
-});
+const PORT = 3001;
+app.listen(PORT, () => console.log(`Waypoint server running on port ${PORT}`));
