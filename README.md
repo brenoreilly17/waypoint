@@ -1,16 +1,19 @@
-# React + Vite
+# Waypoint
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An AI-powered travel planner that optimizes trip suggestions around loyalty points and rewards. Built as a solo project to explore agentic AI application design.
 
-Currently, two official plugins are available:
+## What it does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Waypoint takes a user through a 7-step guided intake (destination flexibility, dates, points/rewards programs, preferences) and generates a set of personalized trip options. Instead of a fixed rules engine, trip generation is handled by the Claude API with web search enabled, so the tool can reason through options — flight/points tradeoffs, destination fit — rather than following a hardcoded script.
 
-## React Compiler
+## Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend** — React (Vite), a 7-step form UI with a carousel-style results view (`src/App.jsx`)
+- **Backend (production)** — Vercel serverless functions: `api/plan.js` generates trip plans, `api/itinerary.js` handles itinerary detail/refinement
+- **Backend (local dev)** — `server.js`, an Express server mirroring the serverless logic for local testing
+- **AI orchestration** — Claude API calls with web search as a tool, plus the Pexels API for destination imagery
+- **Mock mode** — a `MOCK_MODE` flag returns fixed sample results (Lisbon/Edinburgh/Reykjavik) without live API calls, for UI development without burning API costs
 
-## Expanding the ESLint configuration
+## Status
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Actively developed. Pending: support for one-way trips, different return airport than departure, and return-date validation.
