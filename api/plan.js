@@ -1,6 +1,6 @@
 const Anthropic = require("@anthropic-ai/sdk");
 
-const MOCK_MODE = true;
+const MOCK_MODE = false;
 
 const MOCK_RESPONSE = {
   destinations: [
