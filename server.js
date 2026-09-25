@@ -3,9 +3,9 @@ import cors from "cors";
 import Anthropic from "@anthropic-ai/sdk";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ path: ".env.local" });
 
-const MOCK_MODE = true;
+const MOCK_MODE = false;
 
 const MOCK_RESPONSE = {
   destinations: [
@@ -238,14 +238,30 @@ ${pointsSummary || "No points — recommend cash only"}
 STRICT RULES:
 - ONLY recommend flights bookable with the programs listed above or their transfer partners
 - ONLY recommend hotels bookable with the hotel programs listed above
+- If a program is not listed, the user does not have it — do not mention it
+- Transfer partners you may suggest ONLY if the base program is listed:
+  * Amex MR → Aer Lingus Avios, Air Canada Aeroplan, ANA, British Airways Avios, Air France/KLM Flying Blue, Cathay Pacific Asia Miles, Delta SkyMiles, Emirates, Etihad, Hawaiian, Iberia Avios, JetBlue, Qantas, Singapore KrisFlyer, Virgin Atlantic, Hilton Honors, Marriott Bonvoy
+  * Chase UR → United MileagePlus, Aer Lingus Avios, Air Canada Aeroplan, Air France/KLM Flying Blue, British Airways Avios, Emirates, Iberia Avios, Singapore KrisFlyer, Southwest, Virgin Atlantic, World of Hyatt, Marriott Bonvoy
+  * Capital One → Air Canada Aeroplan, Air France/KLM Flying Blue, Avianca LifeMiles, British Airways Avios, Cathay Pacific, Emirates, Etihad, Finnair, Qantas, Singapore KrisFlyer, TAP Air Portugal, Turkish Miles&Smiles, Wyndham Rewards
+  * Bilt → Air Canada Aeroplan, Alaska Mileage Plan, American AAdvantage, British Airways Avios, Air France/KLM Flying Blue, Cathay Pacific, Emirates, Hawaiian, World of Hyatt, IHG One Rewards, Marriott Bonvoy, United MileagePlus, Virgin Atlantic
+  * Citi ThankYou → Avianca LifeMiles, Cathay Pacific, Air France/KLM Flying Blue, JetBlue, Qantas, Singapore KrisFlyer, Turkish Miles&Smiles, Virgin Atlantic, Wyndham Rewards
+  * Marriott Bonvoy → 40+ airlines at 3:1 ratio (60k Bonvoy = 25k airline miles)
+- bookingSteps must ONLY reference programs the user actually has
+- bookingSteps are booking steps ONLY — no sightseeing, no travel tips
 - cashEstimate must be a SHORT NUMBER ONLY like "$800-1,200" — never a sentence or explanation
 - tempF must include both high AND low
 - Always return exactly 2 hotels per destination
 - Never return N/A for points — if you can't find a points redemption pick a different destination
+- Never return "cash only" — always find a valid transfer path
 
 Trip request: "${tripDescription}"
 
-Return ONLY valid JSON with 3 destinations.`;
+Search the web for real nonstop flights, award availability, hotels, and weather.
+
+Return ONLY this JSON:
+{"destinations":[{"city":"Lisbon","country":"Portugal","emoji":"🇵🇹","why":"One sentence why this fits using their actual points.","flightTime":"7h","tempF":"82°F high / 65°F low","pointsNeeded":"26k Avios via Amex MR","coordinates":{"lat":38.7223,"lng":-9.1393},"outboundFlights":[{"airline":"Aer Lingus","route":"BOS → LIS","departure":"9:55 PM","arrival":"9:40 AM+1","points":"26,000 Aer Lingus Avios (transfer from Amex MR)","cash":"$5.60","bookingSteps":["Transfer 26,000 Amex MR to Aer Lingus AerClub at americanexpress.com/rewards","Go to aerlingus.com, search BOS to LIS, select nonstop, pay ~$5.60 in taxes"]}],"returnFlights":[{"airline":"Aer Lingus","route":"LIS → BOS","departure":"11:15 AM","arrival":"1:45 PM","points":"26,000 Aer Lingus Avios","cash":"$5.60","bookingSteps":["Search LIS to BOS on aerlingus.com for return date","Book with remaining Avios balance"]}],"hotels":[{"name":"Hilton Lisbon","program":"Hilton Honors","pointsPerNight":"40,000 pts/night","cashRate":"~$180/night","bookUrl":"https://www.hilton.com","bookingSteps":["Go to hilton.com, search Lisbon for your dates, filter by Use Points","Select Hilton Lisbon at 40,000 pts/night and complete booking"]},{"name":"DoubleTree Lisbon","program":"Hilton Honors","pointsPerNight":"30,000 pts/night","cashRate":"~$140/night","bookUrl":"https://www.hilton.com","bookingSteps":["Go to hilton.com, search Lisbon, filter by Use Points","Select DoubleTree at 30,000 pts/night — better value for your balance"]}],"cashEstimate":"$1,200–1,600","localCosts":{"uber":"~$8","beer":"~$2","dinner":"~$20"}}]}
+
+Replace ALL example values with real searched data. Return ONLY the JSON.`;
 
   try {
     const response = await client.messages.create({
